@@ -1,17 +1,61 @@
+import { useEffect, useState, type ReactNode } from "react"
+import { Code, Download, Moon, Sun } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+
 const links = {
     email: "mailto:andrijamitrovic11@gmail.com",
     github: "https://github.com/andrijamitrovic",
+    resumePdf: "/resume.pdf",
+    sourceCode: "https://github.com/andrijamitrovic/portfolio",
     fittrack: "https://fitcadence.net",
     grepLite: "https://andrijamitrovic.github.io/haskell-grep-lite",
 }
 
 export function Resume() {
+    const [isDark, setIsDark] = useState(() => {
+        const savedTheme = localStorage.getItem("theme")
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+
+        return savedTheme === "dark" || (!savedTheme && prefersDark)
+    })
+
+    useEffect(() => {
+        document.documentElement.classList.toggle("dark", isDark)
+        localStorage.setItem("theme", isDark ? "dark" : "light")
+    }, [isDark])
+
     return (
-        <main className="min-h-screen bg-neutral-100 px-4 py-10 text-neutral-950">
-            <article className="mx-auto max-w-[850px] bg-white px-8 py-10 shadow-sm sm:px-14">
+        <main className="min-h-screen bg-background px-4 py-10 text-foreground">
+            <div className="mx-auto mb-4 flex max-w-[850px] flex-wrap justify-end gap-2">
+                <Button asChild variant="outline" size="sm">
+                    <a href={links.resumePdf} download="Andrija_Mitrovic_CV.pdf">
+                        <Download />
+                        Download PDF
+                    </a>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                    <a href={links.sourceCode} target="_blank" rel="noreferrer">
+                        <Code />
+                        Source Code
+                    </a>
+                </Button>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-pressed={isDark}
+                    onClick={() => setIsDark((current) => !current)}
+                >
+                    {isDark ? <Sun /> : <Moon />}
+                    {isDark ? "Light Theme" : "Dark Theme"}
+                </Button>
+            </div>
+
+            <article className="mx-auto max-w-[850px] border border-border bg-card px-8 py-10 text-card-foreground shadow-sm sm:px-14">
                 <header className="text-center">
-                    <h1 className="text-3xl font-semibold tracking-tight">Andrija Mitrović</h1>
-                    <div className="mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-neutral-700">
+                    <h1 className="text-3xl font-semibold tracking-tight">{"Andrija Mitrovi\u0107"}</h1>
+                    <div className="mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                         <a href={links.email}>andrijamitrovic11@gmail.com</a>
                         <span>|</span>
                         <span>+381 60 434 0061</span>
@@ -23,7 +67,7 @@ export function Resume() {
                 <Section title="Education">
                     <Entry title="B.Sc. Computer Science" date="2018 - Present">
                         <p>University of Kragujevac, Faculty of Natural Sciences and Mathematics</p>
-                        <p className="text-sm text-neutral-700">
+                        <p className="text-sm text-muted-foreground">
                             Relevant coursework: Algorithms & Data Structures, Operating Systems,
                             Databases, Software Engineering, Computer Networks
                         </p>
@@ -81,12 +125,40 @@ export function Resume() {
     )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-    return <section className="mt-7 border-t border-neutral-300 pt-3"><h2 className="mb-3 text-sm font-bold uppercase tracking-wide">{title}</h2>{children}</section>
+function Section({ title, children }: { title: string; children: ReactNode }) {
+    return (
+        <section className="mt-7">
+            <h2 className="text-sm font-bold uppercase tracking-wide">{title}</h2>
+            <div className="mt-2 border-t border-border pt-3">{children}</div>
+        </section>
+    )
 }
 
-function Entry({ title, date, org, link, linkText, children }: any) {
-    return <div className="mb-4"><div className="flex flex-wrap justify-between gap-x-4 font-semibold"><span>{title}</span><span>{date}</span></div>{org && <p>{org}</p>}{link && <a className="text-sm text-neutral-700 underline" href={link} target="_blank" rel="noreferrer">{linkText}</a>}<div className="mt-2">{children}</div></div>
+type EntryProps = {
+    title: string
+    date: string
+    org?: string
+    link?: string
+    linkText?: string
+    children: ReactNode
+}
+
+function Entry({ title, date, org, link, linkText, children }: EntryProps) {
+    return (
+        <div className="mb-4">
+            <div className="flex flex-wrap justify-between gap-x-4 font-semibold">
+                <span>{title}</span>
+                <span>{date}</span>
+            </div>
+            {org && <p>{org}</p>}
+            {link && (
+                <a className="text-sm text-muted-foreground underline" href={link} target="_blank" rel="noreferrer">
+                    {linkText}
+                </a>
+            )}
+            <div className="mt-2">{children}</div>
+        </div>
+    )
 }
 
 function Bullets({ items }: { items: string[] }) {

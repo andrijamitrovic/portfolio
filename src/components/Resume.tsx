@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 const links = {
     email: "mailto:andrijamitrovic11@gmail.com",
     github: "https://github.com/andrijamitrovic",
-    resumePdf: "/resume.pdf",
+    resumePdf: `${import.meta.env.BASE_URL}resume.pdf`,
     sourceCode: "https://github.com/andrijamitrovic/portfolio",
     fittrack: "https://fitcadence.net",
     grepLite: "https://andrijamitrovic.github.io/haskell-grep-lite",
